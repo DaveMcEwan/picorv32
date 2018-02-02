@@ -5,6 +5,7 @@ RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /space/riscv32
 SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
 FIRMWARE_OBJS = firmware/start.o firmware/irq.o firmware/print.o firmware/sieve.o firmware/multest.o firmware/stats.o
+RISCVSYS0_OBJS = riscvsys0/start.o riscvsys0/irq.o riscvsys0/print.o riscvsys0/sieve.o riscvsys0/multest.o riscvsys0/stats.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
 GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -Wmissing-prototypes -pedantic # -Wconversion
 TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)i/bin/riscv32-unknown-elf-
@@ -12,6 +13,9 @@ COMPRESSED_ISA = C
 
 # Add things like "export http_proxy=... https_proxy=..." here
 GIT_ENV = true
+
+riscvsys0: testbench.vvp riscvsys0/riscvsys0.hex
+	vvp -N $< +vcd +trace +noerror +firmware=riscvsys0/riscvsys0.hex
 
 test: testbench.vvp firmware/firmware.hex
 	vvp -N $<
@@ -101,6 +105,27 @@ firmware/start.o: firmware/start.S
 firmware/%.o: firmware/%.c
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) -Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib -o $@ $<
 
+
+riscvsys0/riscvsys0.hex: riscvsys0/riscvsys0.bin riscvsys0/makehex.py
+	python3 riscvsys0/makehex.py $< 16384 > $@
+
+riscvsys0/riscvsys0.bin: riscvsys0/riscvsys0.elf
+	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@
+	chmod -x $@
+
+riscvsys0/riscvsys0.elf: $(RISCVSYS0_OBJS) $(TEST_OBJS) riscvsys0/sections.lds
+	$(TOOLCHAIN_PREFIX)gcc -Os -ffreestanding -nostdlib -o $@ \
+		-Wl,-Bstatic,-T,riscvsys0/sections.lds,-Map,riscvsys0/riscvsys0.map,--strip-debug \
+		$(RISCVSYS0_OBJS) $(TEST_OBJS) -lgcc
+	chmod -x $@
+
+riscvsys0/start.o: riscvsys0/start.S
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) -o $@ $<
+
+riscvsys0/%.o: riscvsys0/%.c
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) -Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib -o $@ $<
+
+
 tests/%.o: tests/%.S tests/riscv_test.h tests/test_macros.h
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im -o $@ -DTEST_FUNC_NAME=$(notdir $(basename $<)) \
 		-DTEST_FUNC_TXT='"$(notdir $(basename $<))"' -DTEST_FUNC_RET=$(notdir $(basename $<))_ret $<
@@ -159,8 +184,9 @@ toc:
 clean:
 	rm -rf riscv-gnu-toolchain-riscv32i riscv-gnu-toolchain-riscv32ic \
 		riscv-gnu-toolchain-riscv32im riscv-gnu-toolchain-riscv32imc
-	rm -vrf $(FIRMWARE_OBJS) $(TEST_OBJS) check.smt2 check.vcd synth.v synth.log \
-		firmware/firmware.elf firmware/firmware.bin firmware/firmware.hex firmware/firmware.map \
+	rm -vrf $(TEST_OBJS) check.smt2 check.vcd synth.v synth.log \
+		$(FIRMWARE_OBJS) firmware/firmware.elf firmware/firmware.bin firmware/firmware.hex firmware/firmware.map \
+		$(RISCVSYS0_OBJS) riscvsys0/riscvsys0.elf riscvsys0/riscvsys0.bin riscvsys0/riscvsys0.hex riscvsys0/riscvsys0.map \
 		testbench.vvp testbench_sp.vvp testbench_synth.vvp testbench_ez.vvp \
 		testbench_rvf.vvp testbench_wb.vvp testbench.vcd testbench.trace
 
