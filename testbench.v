@@ -23,10 +23,13 @@ module testbench #(
     resetn <= 1;
   end
 
+  integer dumplevel;
   initial begin
     if ($test$plusargs("vcd")) begin
+      if (!$value$plusargs("dumplevel=%d", dumplevel))
+        dumplevel = 1;
       $dumpfile("testbench.vcd");
-      $dumpvars(0, testbench);
+      $dumpvars(dumplevel, top.uut.picorv32_core);
     end
     repeat (1000000) @(posedge clk);
     $display("TIMEOUT");
