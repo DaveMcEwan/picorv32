@@ -1,6 +1,6 @@
 
 RISCV_GNU_TOOLCHAIN_GIT_REVISION = bf5697a
-RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /opt/riscv32
+RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /space/riscv32
 
 SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
@@ -75,7 +75,7 @@ check-%: check.smt2
 
 check.smt2: picorv32.v
 	yosys -v2 -p 'read_verilog -formal picorv32.v' \
-	          -p 'prep -top picorv32 -nordff' \
+			  -p 'prep -top picorv32 -nordff' \
 		  -p 'assertpmux -noinit; opt -fast' \
 		  -p 'write_smt2 -wires check.smt2'
 
