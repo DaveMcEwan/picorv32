@@ -1,0 +1,10 @@
+# Compiled objects
+*.o
+
+# Linker map
+*.map
+
+# Linked executable
+*.elf
+*.bin
+*.hex
