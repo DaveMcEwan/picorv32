@@ -113,10 +113,10 @@ riscvsys0/riscvsys0.bin: riscvsys0/riscvsys0.elf
 	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@
 	chmod -x $@
 
-riscvsys0/riscvsys0.elf: $(RISCVSYS0_OBJS) $(TEST_OBJS) riscvsys0/sections.lds
+riscvsys0/riscvsys0.elf: $(RISCVSYS0_OBJS) riscvsys0/sections.lds
 	$(TOOLCHAIN_PREFIX)gcc -Os -ffreestanding -nostdlib -o $@ \
 		-Wl,-Bstatic,-T,riscvsys0/sections.lds,-Map,riscvsys0/riscvsys0.map,--strip-debug \
-		$(RISCVSYS0_OBJS) $(TEST_OBJS) -lgcc
+		$(RISCVSYS0_OBJS) -lgcc
 	chmod -x $@
 
 riscvsys0/start.o: riscvsys0/start.S
