@@ -6,14 +6,7 @@
 // means.
 
 #define ENABLE_QREGS
-#define ENABLE_RVTST
-#define ENABLE_SIEVE
-#define ENABLE_MULTST
 #define ENABLE_STATS
-
-#ifndef ENABLE_QREGS
-#  undef ENABLE_RVTST
-#endif
 
 // Only save registers in IRQ wrapper that are to be saved by the caller in
 // the RISC-V ABI, with the excpetion of the stack pointer. The IRQ handler
@@ -380,15 +373,7 @@ start:
     addi gp, gp, %lo(0xdeadbeef)
     addi tp, gp, 0
 
-#ifdef ENABLE_SIEVE
-    /* call sieve C code */
-    jal ra,sieve
-#endif
-
-#ifdef ENABLE_MULTST
-    /* call multest C code */
-    jal ra,multest
-#endif
+    jal ra,main
 
 #ifdef ENABLE_STATS
     /* call stats C code */
