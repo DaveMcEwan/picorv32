@@ -119,6 +119,7 @@ riscvsys0/riscvsys0.elf: $(RISCVSYS0_OBJS) riscvsys0/sections.lds
 		-Wl,-Bstatic,-T,riscvsys0/sections.lds,-Map,riscvsys0/riscvsys0.map,--strip-debug \
 		$(RISCVSYS0_OBJS) -lgcc
 	chmod -x $@
+	$(TOOLCHAIN_PREFIX)objdump -D $@ > $@.dasm
 
 riscvsys0/start.o: riscvsys0/start.S
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) -o $@ $<
