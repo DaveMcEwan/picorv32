@@ -366,6 +366,11 @@ start:
     addi gp, gp, %lo(0xdeadbeef)
     addi tp, gp, 0
 
+    /* Write magic value to $dumpon in testbench.v */
+    li a0, 0x20000000
+    li a1, 0xcafebabe
+    sw a1,0(a0)
+
     jal ra,main
 
     /* Write magic value to $finish in testbench.v */
