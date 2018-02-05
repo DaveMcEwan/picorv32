@@ -29,8 +29,10 @@ module testbench #(
       $dumpfile("testbench.vcd");
       if (!$value$plusargs("dumplevel=%d", dumplevel))
         dumplevel = 0;
-      if ($test$plusargs("eva"))
+      if ($test$plusargs("eva")) begin
         $dumpvars(dumplevel, evmon);
+        $dumpoff();
+      end
       else
         $dumpvars(dumplevel, testbench);
     end
@@ -569,6 +571,8 @@ module axi4_memory #(
     if (latched_waddr == 32'h2000_0000) begin
       if (latched_wdata == 123456789)
         tests_passed = 1;
+      else if (latched_wdata == 32'hcafebabe)
+        $dumpon();
     end else begin
       $display("OUT-OF-BOUNDS MEMORY WRITE TO %08x", latched_waddr);
       $finish;
