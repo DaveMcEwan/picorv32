@@ -71,162 +71,162 @@ module testbench #(
   );
 
   riscvsys_monitor evmon ( // {{{
-    .instr_lui          (top.uut.picorv32_core.instr_lui         ),
-    .instr_auipc        (top.uut.picorv32_core.instr_auipc       ),
-    .instr_jal          (top.uut.picorv32_core.instr_jal         ),
-    .instr_jalr         (top.uut.picorv32_core.instr_jalr        ),
-    .instr_beq          (top.uut.picorv32_core.instr_beq         ),
-    .instr_bne          (top.uut.picorv32_core.instr_bne         ),
-    .instr_blt          (top.uut.picorv32_core.instr_blt         ),
-    .instr_bge          (top.uut.picorv32_core.instr_bge         ),
-    .instr_bltu         (top.uut.picorv32_core.instr_bltu        ),
-    .instr_bgeu         (top.uut.picorv32_core.instr_bgeu        ),
-    .instr_lb           (top.uut.picorv32_core.instr_lb          ),
-    .instr_lh           (top.uut.picorv32_core.instr_lh          ),
-    .instr_lw           (top.uut.picorv32_core.instr_lw          ),
-    .instr_lbu          (top.uut.picorv32_core.instr_lbu         ),
-    .instr_lhu          (top.uut.picorv32_core.instr_lhu         ),
-    .instr_sb           (top.uut.picorv32_core.instr_sb          ),
-    .instr_sh           (top.uut.picorv32_core.instr_sh          ),
-    .instr_sw           (top.uut.picorv32_core.instr_sw          ),
-    .instr_addi         (top.uut.picorv32_core.instr_addi        ),
-    .instr_slti         (top.uut.picorv32_core.instr_slti        ),
-    .instr_sltiu        (top.uut.picorv32_core.instr_sltiu       ),
-    .instr_xori         (top.uut.picorv32_core.instr_xori        ),
-    .instr_ori          (top.uut.picorv32_core.instr_ori         ),
-    .instr_andi         (top.uut.picorv32_core.instr_andi        ),
-    .instr_slli         (top.uut.picorv32_core.instr_slli        ),
-    .instr_srli         (top.uut.picorv32_core.instr_srli        ),
-    .instr_srai         (top.uut.picorv32_core.instr_srai        ),
-    .instr_add          (top.uut.picorv32_core.instr_add         ),
-    .instr_sub          (top.uut.picorv32_core.instr_sub         ),
-    .instr_sll          (top.uut.picorv32_core.instr_sll         ),
-    .instr_slt          (top.uut.picorv32_core.instr_slt         ),
-    .instr_sltu         (top.uut.picorv32_core.instr_sltu        ),
-    .instr_xor          (top.uut.picorv32_core.instr_xor         ),
-    .instr_srl          (top.uut.picorv32_core.instr_srl         ),
-    .instr_sra          (top.uut.picorv32_core.instr_sra         ),
-    .instr_or           (top.uut.picorv32_core.instr_or          ),
-    .instr_and          (top.uut.picorv32_core.instr_and         ),
-    .instr_rdcycle      (top.uut.picorv32_core.instr_rdcycle     ),
-    .instr_rdcycleh     (top.uut.picorv32_core.instr_rdcycleh    ),
-    .instr_rdinstr      (top.uut.picorv32_core.instr_rdinstr     ),
-    .instr_rdinstrh     (top.uut.picorv32_core.instr_rdinstrh    ),
-    .instr_ecall_ebreak (top.uut.picorv32_core.instr_ecall_ebreak),
-    .instr_getq         (top.uut.picorv32_core.instr_getq        ),
-    .instr_setq         (top.uut.picorv32_core.instr_setq        ),
-    .instr_retirq       (top.uut.picorv32_core.instr_retirq      ),
-    .instr_maskirq      (top.uut.picorv32_core.instr_maskirq     ),
-    .instr_waitirq      (top.uut.picorv32_core.instr_waitirq     ),
-    .instr_timer        (top.uut.picorv32_core.instr_timer       ),
-    .instr_trap         (top.uut.picorv32_core.instr_trap        ),
-    .dbg_next (top.uut.picorv32_core.dbg_next)
+    .i_instr_lui          (top.uut.picorv32_core.instr_lui         ),
+    .i_instr_auipc        (top.uut.picorv32_core.instr_auipc       ),
+    .i_instr_jal          (top.uut.picorv32_core.instr_jal         ),
+    .i_instr_jalr         (top.uut.picorv32_core.instr_jalr        ),
+    .i_instr_beq          (top.uut.picorv32_core.instr_beq         ),
+    .i_instr_bne          (top.uut.picorv32_core.instr_bne         ),
+    .i_instr_blt          (top.uut.picorv32_core.instr_blt         ),
+    .i_instr_bge          (top.uut.picorv32_core.instr_bge         ),
+    .i_instr_bltu         (top.uut.picorv32_core.instr_bltu        ),
+    .i_instr_bgeu         (top.uut.picorv32_core.instr_bgeu        ),
+    .i_instr_lb           (top.uut.picorv32_core.instr_lb          ),
+    .i_instr_lh           (top.uut.picorv32_core.instr_lh          ),
+    .i_instr_lw           (top.uut.picorv32_core.instr_lw          ),
+    .i_instr_lbu          (top.uut.picorv32_core.instr_lbu         ),
+    .i_instr_lhu          (top.uut.picorv32_core.instr_lhu         ),
+    .i_instr_sb           (top.uut.picorv32_core.instr_sb          ),
+    .i_instr_sh           (top.uut.picorv32_core.instr_sh          ),
+    .i_instr_sw           (top.uut.picorv32_core.instr_sw          ),
+    .i_instr_addi         (top.uut.picorv32_core.instr_addi        ),
+    .i_instr_slti         (top.uut.picorv32_core.instr_slti        ),
+    .i_instr_sltiu        (top.uut.picorv32_core.instr_sltiu       ),
+    .i_instr_xori         (top.uut.picorv32_core.instr_xori        ),
+    .i_instr_ori          (top.uut.picorv32_core.instr_ori         ),
+    .i_instr_andi         (top.uut.picorv32_core.instr_andi        ),
+    .i_instr_slli         (top.uut.picorv32_core.instr_slli        ),
+    .i_instr_srli         (top.uut.picorv32_core.instr_srli        ),
+    .i_instr_srai         (top.uut.picorv32_core.instr_srai        ),
+    .i_instr_add          (top.uut.picorv32_core.instr_add         ),
+    .i_instr_sub          (top.uut.picorv32_core.instr_sub         ),
+    .i_instr_sll          (top.uut.picorv32_core.instr_sll         ),
+    .i_instr_slt          (top.uut.picorv32_core.instr_slt         ),
+    .i_instr_sltu         (top.uut.picorv32_core.instr_sltu        ),
+    .i_instr_xor          (top.uut.picorv32_core.instr_xor         ),
+    .i_instr_srl          (top.uut.picorv32_core.instr_srl         ),
+    .i_instr_sra          (top.uut.picorv32_core.instr_sra         ),
+    .i_instr_or           (top.uut.picorv32_core.instr_or          ),
+    .i_instr_and          (top.uut.picorv32_core.instr_and         ),
+    .i_instr_rdcycle      (top.uut.picorv32_core.instr_rdcycle     ),
+    .i_instr_rdcycleh     (top.uut.picorv32_core.instr_rdcycleh    ),
+    .i_instr_rdinstr      (top.uut.picorv32_core.instr_rdinstr     ),
+    .i_instr_rdinstrh     (top.uut.picorv32_core.instr_rdinstrh    ),
+    .i_instr_ecall_ebreak (top.uut.picorv32_core.instr_ecall_ebreak),
+    .i_instr_getq         (top.uut.picorv32_core.instr_getq        ),
+    .i_instr_setq         (top.uut.picorv32_core.instr_setq        ),
+    .i_instr_retirq       (top.uut.picorv32_core.instr_retirq      ),
+    .i_instr_maskirq      (top.uut.picorv32_core.instr_maskirq     ),
+    .i_instr_waitirq      (top.uut.picorv32_core.instr_waitirq     ),
+    .i_instr_timer        (top.uut.picorv32_core.instr_timer       ),
+    .i_instr_trap         (top.uut.picorv32_core.instr_trap        ),
+    .i_dbg_next (top.uut.picorv32_core.dbg_next)
   ); // }}}
 
 endmodule
 `endif
 
 module riscvsys_monitor ( // {{{
-  input wire instr_lui,
-  input wire instr_auipc,
-  input wire instr_jal,
-  input wire instr_jalr,
-  input wire instr_beq,
-  input wire instr_bne,
-  input wire instr_blt,
-  input wire instr_bge,
-  input wire instr_bltu,
-  input wire instr_bgeu,
-  input wire instr_lb,
-  input wire instr_lh,
-  input wire instr_lw,
-  input wire instr_lbu,
-  input wire instr_lhu,
-  input wire instr_sb,
-  input wire instr_sh,
-  input wire instr_sw,
-  input wire instr_addi,
-  input wire instr_slti,
-  input wire instr_sltiu,
-  input wire instr_xori,
-  input wire instr_ori,
-  input wire instr_andi,
-  input wire instr_slli,
-  input wire instr_srli,
-  input wire instr_srai,
-  input wire instr_add,
-  input wire instr_sub,
-  input wire instr_sll,
-  input wire instr_slt,
-  input wire instr_sltu,
-  input wire instr_xor,
-  input wire instr_srl,
-  input wire instr_sra,
-  input wire instr_or,
-  input wire instr_and,
-  input wire instr_rdcycle,
-  input wire instr_rdcycleh,
-  input wire instr_rdinstr,
-  input wire instr_rdinstrh,
-  input wire instr_ecall_ebreak,
-  input wire instr_getq,
-  input wire instr_setq,
-  input wire instr_retirq,
-  input wire instr_maskirq,
-  input wire instr_waitirq,
-  input wire instr_timer,
-  input wire instr_trap,
-  input wire dbg_next
+  input wire i_instr_lui,
+  input wire i_instr_auipc,
+  input wire i_instr_jal,
+  input wire i_instr_jalr,
+  input wire i_instr_beq,
+  input wire i_instr_bne,
+  input wire i_instr_blt,
+  input wire i_instr_bge,
+  input wire i_instr_bltu,
+  input wire i_instr_bgeu,
+  input wire i_instr_lb,
+  input wire i_instr_lh,
+  input wire i_instr_lw,
+  input wire i_instr_lbu,
+  input wire i_instr_lhu,
+  input wire i_instr_sb,
+  input wire i_instr_sh,
+  input wire i_instr_sw,
+  input wire i_instr_addi,
+  input wire i_instr_slti,
+  input wire i_instr_sltiu,
+  input wire i_instr_xori,
+  input wire i_instr_ori,
+  input wire i_instr_andi,
+  input wire i_instr_slli,
+  input wire i_instr_srli,
+  input wire i_instr_srai,
+  input wire i_instr_add,
+  input wire i_instr_sub,
+  input wire i_instr_sll,
+  input wire i_instr_slt,
+  input wire i_instr_sltu,
+  input wire i_instr_xor,
+  input wire i_instr_srl,
+  input wire i_instr_sra,
+  input wire i_instr_or,
+  input wire i_instr_and,
+  input wire i_instr_rdcycle,
+  input wire i_instr_rdcycleh,
+  input wire i_instr_rdinstr,
+  input wire i_instr_rdinstrh,
+  input wire i_instr_ecall_ebreak,
+  input wire i_instr_getq,
+  input wire i_instr_setq,
+  input wire i_instr_retirq,
+  input wire i_instr_maskirq,
+  input wire i_instr_waitirq,
+  input wire i_instr_timer,
+  input wire i_instr_trap,
+  input wire i_dbg_next
 );
-  wire next_lui           = dbg_next && instr_lui;
-  wire next_auipc         = dbg_next && instr_auipc;
-  wire next_jal           = dbg_next && instr_jal;
-  wire next_jalr          = dbg_next && instr_jalr;
-  wire next_beq           = dbg_next && instr_beq;
-  wire next_bne           = dbg_next && instr_bne;
-  wire next_blt           = dbg_next && instr_blt;
-  wire next_bge           = dbg_next && instr_bge;
-  wire next_bltu          = dbg_next && instr_bltu;
-  wire next_bgeu          = dbg_next && instr_bgeu;
-  wire next_lb            = dbg_next && instr_lb;
-  wire next_lh            = dbg_next && instr_lh;
-  wire next_lw            = dbg_next && instr_lw;
-  wire next_lbu           = dbg_next && instr_lbu;
-  wire next_lhu           = dbg_next && instr_lhu;
-  wire next_sb            = dbg_next && instr_sb;
-  wire next_sh            = dbg_next && instr_sh;
-  wire next_sw            = dbg_next && instr_sw;
-  wire next_addi          = dbg_next && instr_addi;
-  wire next_slti          = dbg_next && instr_slti;
-  wire next_sltiu         = dbg_next && instr_sltiu;
-  wire next_xori          = dbg_next && instr_xori;
-  wire next_ori           = dbg_next && instr_ori;
-  wire next_andi          = dbg_next && instr_andi;
-  wire next_slli          = dbg_next && instr_slli;
-  wire next_srli          = dbg_next && instr_srli;
-  wire next_srai          = dbg_next && instr_srai;
-  wire next_add           = dbg_next && instr_add;
-  wire next_sub           = dbg_next && instr_sub;
-  wire next_sll           = dbg_next && instr_sll;
-  wire next_slt           = dbg_next && instr_slt;
-  wire next_sltu          = dbg_next && instr_sltu;
-  wire next_xor           = dbg_next && instr_xor;
-  wire next_srl           = dbg_next && instr_srl;
-  wire next_sra           = dbg_next && instr_sra;
-  wire next_or            = dbg_next && instr_or;
-  wire next_and           = dbg_next && instr_and;
-  wire next_rdcycle       = dbg_next && instr_rdcycle;
-  wire next_rdcycleh      = dbg_next && instr_rdcycleh;
-  wire next_rdinstr       = dbg_next && instr_rdinstr;
-  wire next_rdinstrh      = dbg_next && instr_rdinstrh;
-  wire next_ecall_ebreak  = dbg_next && instr_ecall_ebreak;
-  wire next_getq          = dbg_next && instr_getq;
-  wire next_setq          = dbg_next && instr_setq;
-  wire next_retirq        = dbg_next && instr_retirq;
-  wire next_maskirq       = dbg_next && instr_maskirq;
-  wire next_waitirq       = dbg_next && instr_waitirq;
-  wire next_timer         = dbg_next && instr_timer;
-  wire next_trap          = dbg_next && instr_trap;
+  wire ev_lui           = i_dbg_next && i_instr_lui;
+  wire ev_auipc         = i_dbg_next && i_instr_auipc;
+  wire ev_jal           = i_dbg_next && i_instr_jal;
+  wire ev_jalr          = i_dbg_next && i_instr_jalr;
+  wire ev_beq           = i_dbg_next && i_instr_beq;
+  wire ev_bne           = i_dbg_next && i_instr_bne;
+  wire ev_blt           = i_dbg_next && i_instr_blt;
+  wire ev_bge           = i_dbg_next && i_instr_bge;
+  wire ev_bltu          = i_dbg_next && i_instr_bltu;
+  wire ev_bgeu          = i_dbg_next && i_instr_bgeu;
+  wire ev_lb            = i_dbg_next && i_instr_lb;
+  wire ev_lh            = i_dbg_next && i_instr_lh;
+  wire ev_lw            = i_dbg_next && i_instr_lw;
+  wire ev_lbu           = i_dbg_next && i_instr_lbu;
+  wire ev_lhu           = i_dbg_next && i_instr_lhu;
+  wire ev_sb            = i_dbg_next && i_instr_sb;
+  wire ev_sh            = i_dbg_next && i_instr_sh;
+  wire ev_sw            = i_dbg_next && i_instr_sw;
+  wire ev_addi          = i_dbg_next && i_instr_addi;
+  wire ev_slti          = i_dbg_next && i_instr_slti;
+  wire ev_sltiu         = i_dbg_next && i_instr_sltiu;
+  wire ev_xori          = i_dbg_next && i_instr_xori;
+  wire ev_ori           = i_dbg_next && i_instr_ori;
+  wire ev_andi          = i_dbg_next && i_instr_andi;
+  wire ev_slli          = i_dbg_next && i_instr_slli;
+  wire ev_srli          = i_dbg_next && i_instr_srli;
+  wire ev_srai          = i_dbg_next && i_instr_srai;
+  wire ev_add           = i_dbg_next && i_instr_add;
+  wire ev_sub           = i_dbg_next && i_instr_sub;
+  wire ev_sll           = i_dbg_next && i_instr_sll;
+  wire ev_slt           = i_dbg_next && i_instr_slt;
+  wire ev_sltu          = i_dbg_next && i_instr_sltu;
+  wire ev_xor           = i_dbg_next && i_instr_xor;
+  wire ev_srl           = i_dbg_next && i_instr_srl;
+  wire ev_sra           = i_dbg_next && i_instr_sra;
+  wire ev_or            = i_dbg_next && i_instr_or;
+  wire ev_and           = i_dbg_next && i_instr_and;
+  wire ev_rdcycle       = i_dbg_next && i_instr_rdcycle;
+  wire ev_rdcycleh      = i_dbg_next && i_instr_rdcycleh;
+  wire ev_rdinstr       = i_dbg_next && i_instr_rdinstr;
+  wire ev_rdinstrh      = i_dbg_next && i_instr_rdinstrh;
+  wire ev_ecall_ebreak  = i_dbg_next && i_instr_ecall_ebreak;
+  wire ev_getq          = i_dbg_next && i_instr_getq;
+  wire ev_setq          = i_dbg_next && i_instr_setq;
+  wire ev_retirq        = i_dbg_next && i_instr_retirq;
+  wire ev_maskirq       = i_dbg_next && i_instr_maskirq;
+  wire ev_waitirq       = i_dbg_next && i_instr_waitirq;
+  wire ev_timer         = i_dbg_next && i_instr_timer;
+  wire ev_trap          = i_dbg_next && i_instr_trap;
 endmodule // }}}
 
 module picorv32_wrapper #(
