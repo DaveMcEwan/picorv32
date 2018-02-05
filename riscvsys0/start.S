@@ -6,7 +6,6 @@
 // means.
 
 #define ENABLE_QREGS
-#define ENABLE_STATS
 
 // Only save registers in IRQ wrapper that are to be saved by the caller in
 // the RISC-V ABI, with the excpetion of the stack pointer. The IRQ handler
@@ -17,13 +16,7 @@
 
     .section .text
     .global irq
-    .global sieve
-    .global multest
-    .global hard_mul
-    .global hard_mulh
-    .global hard_mulhsu
-    .global hard_mulhu
-    .global stats
+    .global main
 
 reset_vec:
     // no more than 16 bytes here !
@@ -32,8 +25,7 @@ reset_vec:
     j start
 
 
-/* Interrupt handler
- **********************************/
+/* {{{ interrupt handler */
 
 .balign 16
 irq_vec:
@@ -326,6 +318,7 @@ irq_regs:
     .fill 128,4
 irq_stack:
 
+/* }}} interrupt handler */
 
 /* Main program
  **********************************/
@@ -375,48 +368,11 @@ start:
 
     jal ra,main
 
-#ifdef ENABLE_STATS
-    /* call stats C code */
-    jal ra,stats
-#endif
-
-    /* print "DONE\n" */
-    lui a0,0x10000000>>12
-    addi a1,zero,'D'
-    addi a2,zero,'O'
-    addi a3,zero,'N'
-    addi a4,zero,'E'
-    addi a5,zero,'\n'
-    sw a1,0(a0)
-    sw a2,0(a0)
-    sw a3,0(a0)
-    sw a4,0(a0)
-    sw a5,0(a0)
-
+    /* Write magic value to $finish in testbench.v */
     li a0, 0x20000000
     li a1, 123456789
     sw a1,0(a0)
 
     /* trap */
     ebreak
-
-
-/* Hard mul functions for multest.c
- **********************************/
-
-hard_mul:
-    mul a0, a0, a1
-    ret
-
-hard_mulh:
-    mulh a0, a0, a1
-    ret
-
-hard_mulhsu:
-    mulhsu a0, a0, a1
-    ret
-
-hard_mulhu:
-    mulhu a0, a0, a1
-    ret
 

@@ -10,5 +10,7 @@
 void main(void)
 {
   print_str("Hello World!\n");
+  stats();
+  print_str("DONE\n");
 }
 
