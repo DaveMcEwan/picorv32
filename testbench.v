@@ -26,10 +26,13 @@ module testbench #(
   integer dumplevel;
   initial begin
     if ($test$plusargs("vcd")) begin
-      if (!$value$plusargs("dumplevel=%d", dumplevel))
-        dumplevel = 1;
       $dumpfile("testbench.vcd");
-      $dumpvars(dumplevel, evmon);
+      if (!$value$plusargs("dumplevel=%d", dumplevel))
+        dumplevel = 0;
+      if ($test$plusargs("eva"))
+        $dumpvars(dumplevel, evmon);
+      else
+        $dumpvars(dumplevel, testbench);
     end
     repeat (1000000) @(posedge clk);
     $display("TIMEOUT");

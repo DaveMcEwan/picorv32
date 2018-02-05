@@ -15,7 +15,8 @@ COMPRESSED_ISA = C
 GIT_ENV = true
 
 riscvsys0: testbench.vvp riscvsys0/riscvsys0.hex
-	vvp -N $< +vcd +trace +noerror +firmware=riscvsys0/riscvsys0.hex
+	vvp -N $< +firmware=riscvsys0/riscvsys0.hex \
+		+vcd +trace +noerror +eva +dumplevel=1
 
 test: testbench.vvp firmware/firmware.hex
 	vvp -N $<
