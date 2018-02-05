@@ -8,3 +8,6 @@
 *.elf
 *.bin
 *.hex
+
+# Disassembly dump
+*.dasm
