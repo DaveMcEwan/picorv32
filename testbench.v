@@ -120,6 +120,8 @@ module testbench #(
     .i_instr_waitirq      (top.uut.picorv32_core.instr_waitirq     ),
     .i_instr_timer        (top.uut.picorv32_core.instr_timer       ),
     .i_instr_trap         (top.uut.picorv32_core.instr_trap        ),
+    .i_pc       (top.uut.picorv32_core.reg_pc),
+    .i_next_pc  (top.uut.picorv32_core.reg_next_pc),
     .i_dbg_next (top.uut.picorv32_core.dbg_next)
   ); // }}}
 
@@ -176,6 +178,8 @@ module riscvsys_monitor ( // {{{
   input wire i_instr_waitirq,
   input wire i_instr_timer,
   input wire i_instr_trap,
+  input wire [31:0] i_pc,
+  input wire [31:0] i_next_pc,
   input wire i_dbg_next
 );
   wire ev_lui           = i_dbg_next && i_instr_lui;
