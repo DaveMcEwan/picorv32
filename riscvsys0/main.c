@@ -9,8 +9,9 @@
 
 void main(void)
 {
+  tb_dumpon();
   print_str("Hello World!\n");
-  stats();
-  print_str("DONE\n");
+  tb_dumpoff();
+  tb_pass();
 }
 

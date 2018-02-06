@@ -20,15 +20,11 @@ void print_str(const char *p);
 void print_dec(unsigned int val);
 void print_hex(unsigned int val, int digits);
 
-// sieve.c
-void sieve(void);
-
-// multest.c
-uint32_t hard_mul(uint32_t a, uint32_t b);
-uint32_t hard_mulh(uint32_t a, uint32_t b);
-uint32_t hard_mulhsu(uint32_t a, uint32_t b);
-uint32_t hard_mulhu(uint32_t a, uint32_t b);
-void multest(void);
+// testbench.v
+void tb_dumpon(void);
+void tb_dumpoff(void);
+void tb_pass(void);
+void tb_fail(void);
 
 // stats.c
 void stats(void);

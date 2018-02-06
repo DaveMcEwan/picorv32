@@ -569,8 +569,12 @@ module axi4_memory #(
       end
     end else
     if (latched_waddr == 32'h2000_0000) begin
-      if (latched_wdata == 123456789)
+      if (latched_wdata == 32'h12345678)
         tests_passed = 1;
+      else if (latched_wdata == 32'h87654321)
+        tests_passed = 0;
+      else if (latched_wdata == 32'hdeadbabe)
+        $dumpoff();
       else if (latched_wdata == 32'hcafebabe)
         $dumpon();
     end else begin
