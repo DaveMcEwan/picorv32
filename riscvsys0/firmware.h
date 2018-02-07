@@ -21,12 +21,11 @@ void print_dec(unsigned int val);
 void print_hex(unsigned int val, int digits);
 
 // testbench.v
-void tb_dumpon(void);
-void tb_dumpoff(void);
 void tb_pass(void);
 void tb_fail(void);
-
-// stats.c
-void stats(void);
+void tb_dumpoff(void);
+void tb_dumpon(void);
+void tb_dumpmem(void);
+void tb_loadmem(void);
 
 #endif

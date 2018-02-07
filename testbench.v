@@ -550,16 +550,19 @@ module axi4_memory #(
     end
   end endtask
 
-  task handle_axi_bvalid; begin
+  task handle_axi_bvalid; begin : handle_axi_bvalid
+    integer i;
+    integer memoryfile;
+
     if (verbose)
       $display("WR: ADDR=%08x DATA=%08x STRB=%04b", latched_waddr, latched_wdata, latched_wstrb);
+
     if (latched_waddr < 64*1024) begin
       if (latched_wstrb[0]) memory[latched_waddr >> 2][ 7: 0] <= latched_wdata[ 7: 0];
       if (latched_wstrb[1]) memory[latched_waddr >> 2][15: 8] <= latched_wdata[15: 8];
       if (latched_wstrb[2]) memory[latched_waddr >> 2][23:16] <= latched_wdata[23:16];
       if (latched_wstrb[3]) memory[latched_waddr >> 2][31:24] <= latched_wdata[31:24];
-    end else
-    if (latched_waddr == 32'h1000_0000) begin
+    end else if (latched_waddr == 32'h1000_0000) begin
       if (verbose) begin
         if (32 <= latched_wdata && latched_wdata < 128)
           $display("OUT: '%c'", latched_wdata[7:0]);
@@ -571,20 +574,28 @@ module axi4_memory #(
         $fflush();
 `endif
       end
-    end else
-    if (latched_waddr == 32'h2000_0000) begin
-      if (latched_wdata == 32'h12345678)
+    end else if (latched_waddr == 32'h2000_0000) begin
+      if      (latched_wdata == 32'hacce5500)
         tests_passed = 1;
-      else if (latched_wdata == 32'h87654321)
+      else if (latched_wdata == 32'hacce5501)
         tests_passed = 0;
-      else if (latched_wdata == 32'hdeadbabe)
+      else if (latched_wdata == 32'hacce5502)
         $dumpoff();
-      else if (latched_wdata == 32'hcafebabe)
+      else if (latched_wdata == 32'hacce5503)
         $dumpon();
+      else if (latched_wdata == 32'hacce5504) begin
+        memoryfile = $fopen("memory.hex", "w");
+        for (i = 0; i < 64*1024/4; i=i+1)
+          $fwrite(memoryfile, "%08x\n", memory[i]);
+        $fclose(memoryfile);
+      end
+      else if (latched_wdata == 32'hacce5505)
+        $readmemh("memory.hex", memory);
     end else begin
       $display("OUT-OF-BOUNDS MEMORY WRITE TO %08x", latched_waddr);
       $finish;
     end
+
     mem_axi_bvalid <= 1;
     latched_waddr_en = 0;
     latched_wdata_en = 0;

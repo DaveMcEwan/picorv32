@@ -17,10 +17,12 @@
     .section .text
     .global irq
     .global main
-    .global tb_dumpon
-    .global tb_dumpoff
     .global tb_pass
     .global tb_fail
+    .global tb_dumpoff
+    .global tb_dumpon
+    .global tb_dumpmem
+    .global tb_loadmem
 
 reset_vec:
     // no more than 16 bytes here !
@@ -376,39 +378,54 @@ start:
     ebreak
 
 
-/* Write magic value to $dumpon in testbench.v */
-tb_dumpon:
-    li a0, 0x20000000
-    li a1, 0xcafebabe
-    sw a1,0(a0)
-    nop
-    nop
-    nop
-    nop
-    ret
-
-/* Write magic value to $dumpoff in testbench.v */
-tb_dumpoff:
-    li a0, 0x20000000
-    li a1, 0xdeadbabe
-    sw a1,0(a0)
-    nop
-    nop
-    nop
-    nop
-    ret
-
-/* Write magic value to mark test as PASS in testbench.v */
+.balign 32
+// Write magic value to mark test as PASS in testbench.v
 tb_pass:
     li a0, 0x20000000
-    li a1, 0x12345678
+    li a1, 0xacce5500
     sw a1,0(a0)
     ret
 
-/* Write magic value to unmark test as PASS in testbench.v */
+// Write magic value to unmark test as PASS in testbench.v
 tb_fail:
     li a0, 0x20000000
-    li a1, 0x87654321
+    li a1, 0xacce5501
+    sw a1,0(a0)
+    ret
+
+// Write magic value to $dumpoff in testbench.v
+tb_dumpoff:
+    li a0, 0x20000000
+    li a1, 0xacce5502
+    sw a1,0(a0)
+    nop
+    nop
+    nop
+    nop
+    ret
+
+// Write magic value to $dumpon in testbench.v
+tb_dumpon:
+    li a0, 0x20000000
+    li a1, 0xacce5503
+    sw a1,0(a0)
+    nop
+    nop
+    nop
+    nop
+    ret
+
+// Write magic value to dump memory contents to memory.hex
+tb_dumpmem:
+    li a0, 0x20000000
+    li a1, 0xacce5504
+    sw a1,0(a0)
+    ret
+
+// Write magic value to load memory contents from memory.hex
+tb_loadmem:
+    li a0, 0x20000000
+    li a1, 0xacce5505
     sw a1,0(a0)
     ret
 
