@@ -53,7 +53,7 @@ test_axi: testbench.vvp firmware/firmware.hex
 test_synth: testbench_synth.vvp firmware/firmware.hex
 	vvp -N $<
 
-testbench.vvp: testbench.v picorv32.v
+testbench.vvp: testbench.v picorv32.v riscvsys_evmon.v
 	iverilog -o $@ $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) $^
 	chmod -x $@
 
