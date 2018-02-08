@@ -3,12 +3,14 @@
 `include "ff.svh"
 
 `ifndef TIMEOUT
-`define TIMEOUT 'd10000
+`define TIMEOUT 'd100_000_000
 `endif
 
 module riscvsys ( // {{{
+  /*verilator tracing_off*/
   input logic i_clk,
   input logic i_rst
+  /*verilator tracing_on*/
 );
 
   testbench tb (

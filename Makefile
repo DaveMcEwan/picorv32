@@ -21,6 +21,7 @@ hello: hello/hello.hex eva.vcd
 riscvsys0: riscvsys0/riscvsys0.hex eva.vcd
 
 veri_hello: hello/hello.hex riscvsys.vcd
+veri_riscvsys0: riscvsys0/riscvsys0.hex riscvsys.vcd
 
 eva.vcd: testbench.vvp
 	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
@@ -28,13 +29,13 @@ eva.vcd: testbench.vvp
 obj_dir/Vriscvsys: riscvsys.v riscvsys.cc picorv32.v
 	verilator --cc --exe \
 		--trace \
+		--trace-depth 1 \
 		-Wno-fatal \
 		--top-module riscvsys \
 		--clk i_clk \
 		riscvsys.cc \
 		riscvsys.v riscvsys_evmon.v picorv32.v
 	$(MAKE) -C obj_dir -f Vriscvsys.mk
-#		--trace-depth 0 \
 
 riscvsys.vcd: obj_dir/Vriscvsys
 	obj_dir/Vriscvsys
