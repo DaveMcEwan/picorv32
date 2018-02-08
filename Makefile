@@ -17,8 +17,8 @@ GIT_ENV = true
 
 default: hello
 
-hello: hello/hello.hex testbench.vvp eva.vcd
-riscvsys0: riscvsys0/riscvsys0.hex testbench.vvp eva.vcd
+hello: hello/hello.hex eva.vcd
+riscvsys0: riscvsys0/riscvsys0.hex eva.vcd
 
 eva.vcd: testbench.vvp
 	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
