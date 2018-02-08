@@ -6,6 +6,7 @@
 *.hex
 *.vvp
 *.vcd
+obj_dir/*
 /dhrystone/timing.txt
 /riscv-gnu-toolchain-riscv32i
 /riscv-gnu-toolchain-riscv32ic
