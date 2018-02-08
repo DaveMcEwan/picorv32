@@ -6,6 +6,7 @@ SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
 FIRMWARE_OBJS = firmware/start.o firmware/irq.o firmware/print.o firmware/sieve.o firmware/multest.o firmware/stats.o
 RISCVSYS0_OBJS = riscvsys0/start.o riscvsys0/irq.o riscvsys0/print.o riscvsys0/main.o riscvsys0/fft1024.o
+HELLO_OBJS = hello/start.o hello/irq.o hello/print.o hello/main.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
 GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -pedantic # -Wconversion
 TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)i/bin/riscv32-unknown-elf-
@@ -16,6 +17,10 @@ GIT_ENV = true
 
 riscvsys0: testbench.vvp riscvsys0/riscvsys0.hex
 	vvp -N $< +firmware=riscvsys0/riscvsys0.hex \
+		+vcd +trace +noerror +eva +dumplevel=1
+
+hello: testbench.vvp hello/hello.hex
+	vvp -N $< +firmware=hello/hello.hex \
 		+vcd +trace +noerror +eva +dumplevel=1
 
 test: testbench.vvp firmware/firmware.hex
@@ -131,6 +136,30 @@ riscvsys0/%.o: riscvsys0/%.c
 		-o $@ $<
 
 
+hello/hello.hex: hello/hello.bin hello/makehex.py
+	python3 hello/makehex.py $< 16384 > $@
+
+hello/hello.bin: hello/hello.elf
+	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@
+	chmod -x $@
+
+hello/hello.elf: $(HELLO_OBJS) hello/sections.lds
+	$(TOOLCHAIN_PREFIX)gcc -Os -ffreestanding -nostdlib -o $@ \
+		-Wl,-Bstatic,-T,hello/sections.lds,-Map,hello/hello.map,--strip-debug \
+		$(HELLO_OBJS) -lm -lgcc
+	chmod -x $@
+	$(TOOLCHAIN_PREFIX)objdump -D $@ > $@.dasm
+
+hello/start.o: hello/start.S
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) \
+	-o $@ $<
+
+hello/%.o: hello/%.c
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) \
+		-Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib \
+		-o $@ $<
+
+
 tests/%.o: tests/%.S tests/riscv_test.h tests/test_macros.h
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im -o $@ -DTEST_FUNC_NAME=$(notdir $(basename $<)) \
 		-DTEST_FUNC_TXT='"$(notdir $(basename $<))"' -DTEST_FUNC_RET=$(notdir $(basename $<))_ret $<
@@ -192,6 +221,7 @@ clean:
 	rm -vrf $(TEST_OBJS) check.smt2 check.vcd synth.v synth.log \
 		$(FIRMWARE_OBJS) firmware/firmware.elf firmware/firmware.bin firmware/firmware.hex firmware/firmware.map \
 		$(RISCVSYS0_OBJS) riscvsys0/riscvsys0.elf riscvsys0/riscvsys0.bin riscvsys0/riscvsys0.hex riscvsys0/riscvsys0.map \
+		$(HELLO_OBJS) hello/hello.elf hello/hello.bin hello/hello.hex hello/hello.map \
 		testbench.vvp testbench_sp.vvp testbench_synth.vvp testbench_ez.vvp \
 		testbench_rvf.vvp testbench_wb.vvp testbench.vcd testbench.trace
 

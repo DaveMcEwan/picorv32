@@ -1,0 +1,3 @@
+Firmware for riscvsys0.
+Do something basic but interesting in order to generate a VCD suitable for
+analysis with eva.
