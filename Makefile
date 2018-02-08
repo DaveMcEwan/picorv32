@@ -15,6 +15,8 @@ COMPRESSED_ISA = C
 # Add things like "export http_proxy=... https_proxy=..." here
 GIT_ENV = true
 
+default: hello
+
 riscvsys0: testbench.vvp riscvsys0/riscvsys0.hex
 	vvp -N $< +firmware=riscvsys0/riscvsys0.hex \
 		+vcd +trace +noerror +eva +dumplevel=1
