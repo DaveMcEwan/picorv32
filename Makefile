@@ -20,8 +20,24 @@ default: hello
 hello: hello/hello.hex eva.vcd
 riscvsys0: riscvsys0/riscvsys0.hex eva.vcd
 
+veri_hello: hello/hello.hex riscvsys.vcd
+
 eva.vcd: testbench.vvp
 	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
+
+obj_dir/Vriscvsys: riscvsys.v riscvsys.cc picorv32.v
+	verilator --cc --exe \
+		--trace \
+		-Wno-fatal \
+		--top-module riscvsys \
+		--clk i_clk \
+		riscvsys.cc \
+		riscvsys.v riscvsys_evmon.v picorv32.v
+	$(MAKE) -C obj_dir -f Vriscvsys.mk
+#		--trace-depth 0 \
+
+riscvsys.vcd: obj_dir/Vriscvsys
+	obj_dir/Vriscvsys
 
 test: testbench.vvp firmware/firmware.hex
 	vvp -N $<
@@ -226,5 +242,6 @@ clean:
 		$(HELLO_OBJS) hello/hello.elf hello/hello.bin hello/hello.hex hello/hello.map \
 		testbench.vvp testbench_sp.vvp testbench_synth.vvp testbench_ez.vvp \
 		testbench_rvf.vvp testbench_wb.vvp testbench.vcd testbench.trace
+	rm -rf obj_dir
 
 .PHONY: test test_vcd test_sp test_axi test_wb test_wb_vcd test_ez test_ez_vcd test_synth download-tools build-tools toc clean
