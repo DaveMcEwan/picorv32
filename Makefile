@@ -17,13 +17,11 @@ GIT_ENV = true
 
 default: hello
 
-riscvsys0: testbench.vvp riscvsys0/riscvsys0.hex
-	vvp -N $< +firmware=riscvsys0/riscvsys0.hex \
-		+vcd +trace +noerror +eva +dumplevel=1
+hello: hello/hello.hex testbench.vvp eva.vcd
+riscvsys0: riscvsys0/riscvsys0.hex testbench.vvp eva.vcd
 
-hello: testbench.vvp hello/hello.hex
-	vvp -N $< +firmware=hello/hello.hex \
-		+vcd +trace +noerror +eva +dumplevel=1
+eva.vcd: testbench.vvp
+	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
 
 test: testbench.vvp firmware/firmware.hex
 	vvp -N $<
@@ -116,6 +114,7 @@ firmware/%.o: firmware/%.c
 
 riscvsys0/riscvsys0.hex: riscvsys0/riscvsys0.bin riscvsys0/makehex.py
 	python3 riscvsys0/makehex.py $< 16384 > $@
+	cp $@ test.hex
 
 riscvsys0/riscvsys0.bin: riscvsys0/riscvsys0.elf
 	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@
@@ -140,6 +139,7 @@ riscvsys0/%.o: riscvsys0/%.c
 
 hello/hello.hex: hello/hello.bin hello/makehex.py
 	python3 hello/makehex.py $< 16384 > $@
+	cp $@ test.hex
 
 hello/hello.bin: hello/hello.elf
 	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@

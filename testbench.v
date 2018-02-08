@@ -26,14 +26,14 @@ module testbench #(
   integer dumplevel;
   initial begin
     if ($test$plusargs("vcd")) begin
-      $dumpfile("testbench.vcd");
       if (!$value$plusargs("dumplevel=%d", dumplevel))
         dumplevel = 0;
       if ($test$plusargs("eva")) begin
+        $dumpfile("eva.vcd");
         $dumpvars(dumplevel, evmon);
         $dumpoff();
-      end
-      else
+      end else
+        $dumpfile("testbench.vcd");
         $dumpvars(dumplevel, testbench);
     end
     repeat (1000000000) @(posedge clk);
@@ -310,7 +310,7 @@ module picorv32_wrapper #(
   reg [1023:0] firmware_file;
   initial begin
     if (!$value$plusargs("firmware=%s", firmware_file))
-      firmware_file = "firmware/firmware.hex";
+      firmware_file = "test.hex";
     $readmemh(firmware_file, mem.memory);
   end
 
