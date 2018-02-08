@@ -5,9 +5,9 @@ RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /space/riscv32
 SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
 FIRMWARE_OBJS = firmware/start.o firmware/irq.o firmware/print.o firmware/sieve.o firmware/multest.o firmware/stats.o
-RISCVSYS0_OBJS = riscvsys0/start.o riscvsys0/irq.o riscvsys0/print.o riscvsys0/main.o riscvsys0/stats.o
+RISCVSYS0_OBJS = riscvsys0/start.o riscvsys0/irq.o riscvsys0/print.o riscvsys0/main.o riscvsys0/fft1024.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
-GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -Wmissing-prototypes -pedantic # -Wconversion
+GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -pedantic # -Wconversion
 TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)i/bin/riscv32-unknown-elf-
 COMPRESSED_ISA = C
 
@@ -117,15 +117,18 @@ riscvsys0/riscvsys0.bin: riscvsys0/riscvsys0.elf
 riscvsys0/riscvsys0.elf: $(RISCVSYS0_OBJS) riscvsys0/sections.lds
 	$(TOOLCHAIN_PREFIX)gcc -Os -ffreestanding -nostdlib -o $@ \
 		-Wl,-Bstatic,-T,riscvsys0/sections.lds,-Map,riscvsys0/riscvsys0.map,--strip-debug \
-		$(RISCVSYS0_OBJS) -lgcc
+		$(RISCVSYS0_OBJS) -lm -lgcc
 	chmod -x $@
 	$(TOOLCHAIN_PREFIX)objdump -D $@ > $@.dasm
 
 riscvsys0/start.o: riscvsys0/start.S
-	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) -o $@ $<
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) \
+	-o $@ $<
 
 riscvsys0/%.o: riscvsys0/%.c
-	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) -Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib -o $@ $<
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) \
+		-Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib \
+		-o $@ $<
 
 
 tests/%.o: tests/%.S tests/riscv_test.h tests/test_macros.h

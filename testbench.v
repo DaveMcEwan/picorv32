@@ -36,7 +36,7 @@ module testbench #(
       else
         $dumpvars(dumplevel, testbench);
     end
-    repeat (1000000) @(posedge clk);
+    repeat (1000000000) @(posedge clk);
     $display("TIMEOUT");
     $finish;
   end
@@ -248,8 +248,8 @@ module picorv32_wrapper #(
 
   always @* begin
     irq = 0;
-    irq[4] = &uut.picorv32_core.count_cycle[12:0];
-    irq[5] = &uut.picorv32_core.count_cycle[15:0];
+    irq[4] = uut.picorv32_core.count_cycle == ((1 << 12) - 1); // irq after 4k cycles
+    //irq[5] = &uut.picorv32_core.count_cycle[15:0]; // irq every 64k cycles
   end
 
   wire        mem_axi_awvalid;
