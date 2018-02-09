@@ -82,7 +82,7 @@ void main(void)
   // Simulation time: approx 66ms
   //  - iverilog takes a long time.
   // VCD filesize: approx 170MB
-  print_str("fft)...");
+  print_str("fft...");
   tb_dumpon();
   fft1024_radix4(dataInput, dataResult);
   tb_dumpoff();
