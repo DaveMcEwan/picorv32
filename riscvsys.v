@@ -2,8 +2,8 @@
 
 `include "ff.svh"
 
-`ifndef TIMEOUT
-`define TIMEOUT 'd100_000_000
+`ifndef TIMEOUT_POW2
+`define TIMEOUT_POW2 32
 `endif
 
 module riscvsys ( // {{{
@@ -77,10 +77,10 @@ module testbench ( // {{{
   input logic i_rst
 );
 
-  `ff_nocg_srst(int, timetrack, i_clk, 1'b0, 'd0)
+  `ff_nocg_srst(bit [63:0], timetrack, i_clk, 1'b0, 'd0)
   always_comb timetrack_d = timetrack_q + 1;
   always @* begin
-    if (timetrack_q >= `TIMEOUT) begin
+    if (timetrack_q[`TIMEOUT_POW2]) begin
       $display("TIMEOUT");
       $finish();
     end
@@ -189,15 +189,18 @@ module testbench ( // {{{
         end
 
         else if (mem_wdata == 32'hacce5502) begin
+          $display("dumpoff");
           dumpon = 1'b0;
           //$dumpoff();
         end
         else if (mem_wdata == 32'hacce5503) begin
+          $display("dumpon");
           dumpon = 1'b1;
           //$dumpon();
         end
         else if (mem_wdata == 32'hacce5504) begin
           integer fd;
+          $display("dump memory.hex");
           fd = $fopen("memory.hex", "w");
           for (int i = 0; i < 64*1024/4; i=i+1)
             $fwrite(fd, "%08x\n", memory[i]);
@@ -205,6 +208,8 @@ module testbench ( // {{{
         end
         //else if (mem_wdata == 32'hacce5505)
         //  $readmemh("memory.hex", memory);
+
+        $display("timetrack=%d", timetrack_q);
 
         // }}} tb control
       end
