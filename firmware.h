@@ -11,21 +11,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "tb.h"
+
 // irq.c
 uint32_t *irq(uint32_t *regs, uint32_t irqs);
-
-// print.c
-void print_chr(char ch);
-void print_str(const char *p);
-void print_dec(unsigned int val);
-void print_hex(unsigned int val, int digits);
-
-// testbench.v
-void tb_pass(void);
-void tb_fail(void);
-void tb_dumpoff(void);
-void tb_dumpon(void);
-void tb_dumpmem(void);
-void tb_loadmem(void);
 
 #endif

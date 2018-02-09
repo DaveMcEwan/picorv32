@@ -5,8 +5,8 @@ RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /space/riscv32
 SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
 FIRMWARE_OBJS = firmware/start.o firmware/irq.o firmware/print.o firmware/sieve.o firmware/multest.o firmware/stats.o
-RISCVSYS0_OBJS = riscvsys0/start.o riscvsys0/irq.o riscvsys0/print.o riscvsys0/main.o riscvsys0/fft1024.o
-HELLO_OBJS = hello/start.o hello/irq.o hello/print.o hello/main.o
+FFT1024_OBJS = start.o tb.o fft1024/irq.o fft1024/main.o fft1024/fft1024.o
+HELLO_OBJS = start.o tb.o hello/irq.o hello/main.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
 GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -pedantic # -Wconversion
 TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)i/bin/riscv32-unknown-elf-
@@ -18,10 +18,10 @@ GIT_ENV = true
 default: hello
 
 hello: hello/hello.hex eva.vcd
-riscvsys0: riscvsys0/riscvsys0.hex eva.vcd
+fft1024: fft1024/fft1024.hex eva.vcd
 
 veri_hello: hello/hello.hex riscvsys.vcd
-veri_riscvsys0: riscvsys0/riscvsys0.hex riscvsys.vcd
+veri_fft1024: fft1024/fft1024.hex riscvsys.vcd
 
 eva.vcd: testbench.vvp
 	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
@@ -109,8 +109,8 @@ check.smt2: picorv32.v
 synth.v: picorv32.v scripts/yosys/synth_sim.ys
 	yosys -qv3 -l synth.log scripts/yosys/synth_sim.ys
 
-firmware/firmware.hex: firmware/firmware.bin firmware/makehex.py
-	python3 firmware/makehex.py $< 16384 > $@
+firmware/firmware.hex: firmware/firmware.bin makehex.py
+	python3 makehex.py $< 16384 > $@
 
 firmware/firmware.bin: firmware/firmware.elf
 	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@
@@ -129,33 +129,29 @@ firmware/%.o: firmware/%.c
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) -Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib -o $@ $<
 
 
-riscvsys0/riscvsys0.hex: riscvsys0/riscvsys0.bin riscvsys0/makehex.py
-	python3 riscvsys0/makehex.py $< 16384 > $@
+fft1024/fft1024.hex: fft1024/fft1024.bin makehex.py
+	python3 makehex.py $< 16384 > $@
 	cp $@ test.hex
 
-riscvsys0/riscvsys0.bin: riscvsys0/riscvsys0.elf
+fft1024/fft1024.bin: fft1024/fft1024.elf
 	$(TOOLCHAIN_PREFIX)objcopy -O binary $< $@
 	chmod -x $@
 
-riscvsys0/riscvsys0.elf: $(RISCVSYS0_OBJS) riscvsys0/sections.lds
+fft1024/fft1024.elf: $(FFT1024_OBJS) fft1024/sections.lds
 	$(TOOLCHAIN_PREFIX)gcc -Os -ffreestanding -nostdlib -o $@ \
-		-Wl,-Bstatic,-T,riscvsys0/sections.lds,-Map,riscvsys0/riscvsys0.map,--strip-debug \
-		$(RISCVSYS0_OBJS) -lm -lgcc
+		-Wl,-Bstatic,-T,fft1024/sections.lds,-Map,fft1024/fft1024.map,--strip-debug \
+		$(FFT1024_OBJS) -lm -lgcc
 	chmod -x $@
 	$(TOOLCHAIN_PREFIX)objdump -D $@ > $@.dasm
 
-riscvsys0/start.o: riscvsys0/start.S
-	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) \
-	-o $@ $<
-
-riscvsys0/%.o: riscvsys0/%.c
+fft1024/%.o: fft1024/%.c
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) \
 		-Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib \
-		-o $@ $<
+		-I . -o $@ $<
 
 
-hello/hello.hex: hello/hello.bin hello/makehex.py
-	python3 hello/makehex.py $< 16384 > $@
+hello/hello.hex: hello/hello.bin makehex.py
+	python3 makehex.py $< 16384 > $@
 	cp $@ test.hex
 
 hello/hello.bin: hello/hello.elf
@@ -169,14 +165,19 @@ hello/hello.elf: $(HELLO_OBJS) hello/sections.lds
 	chmod -x $@
 	$(TOOLCHAIN_PREFIX)objdump -D $@ > $@.dasm
 
-hello/start.o: hello/start.S
-	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) \
-	-o $@ $<
-
 hello/%.o: hello/%.c
 	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) \
 		-Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib \
+		-I . -o $@ $<
+
+%.o: %.c
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) \
+		-Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib \
 		-o $@ $<
+
+%.o: %.S
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32im$(subst C,c,$(COMPRESSED_ISA)) \
+	-o $@ $<
 
 
 tests/%.o: tests/%.S tests/riscv_test.h tests/test_macros.h
@@ -238,11 +239,9 @@ clean:
 	rm -rf riscv-gnu-toolchain-riscv32i riscv-gnu-toolchain-riscv32ic \
 		riscv-gnu-toolchain-riscv32im riscv-gnu-toolchain-riscv32imc
 	rm -vrf $(TEST_OBJS) check.smt2 check.vcd synth.v synth.log \
-		$(FIRMWARE_OBJS) firmware/firmware.elf firmware/firmware.bin firmware/firmware.hex firmware/firmware.map \
-		$(RISCVSYS0_OBJS) riscvsys0/riscvsys0.elf riscvsys0/riscvsys0.bin riscvsys0/riscvsys0.hex riscvsys0/riscvsys0.map \
-		$(HELLO_OBJS) hello/hello.elf hello/hello.bin hello/hello.hex hello/hello.map \
-		testbench.vvp testbench_sp.vvp testbench_synth.vvp testbench_ez.vvp \
-		testbench_rvf.vvp testbench_wb.vvp testbench.vcd testbench.trace
-	rm -rf obj_dir
+		$(FIRMWARE_OBJS) \
+		$(FFT1024_OBJS) \
+		$(HELLO_OBJS) \
+		*/*.elf */*.elf.dasm */*.bin */*.hex */*.map *.vvp *.vcd *.trace obj_dir
 
 .PHONY: test test_vcd test_sp test_axi test_wb test_wb_vcd test_ez test_ez_vcd test_synth download-tools build-tools toc clean

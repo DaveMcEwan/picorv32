@@ -5,16 +5,13 @@
 // binary, for any purpose, commercial or non-commercial, and by any
 // means.
 
-#ifndef FIRMWARE_H
-#define FIRMWARE_H
+#ifndef TB_H
+#define TB_H
 
 #include <stdint.h>
-#include <stdbool.h>
 
-// irq.c
-uint32_t *irq(uint32_t *regs, uint32_t irqs);
+#define PRINT_ADDR 0x10000000
 
-// print.c
 void print_chr(char ch);
 void print_str(const char *p);
 void print_dec(unsigned int val);
