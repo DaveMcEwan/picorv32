@@ -55,17 +55,21 @@ public:
       // changes, for which some logic depends.
       // This forces that logic to be recalculated before the top of the clock.
       eval();
-      //if (m_trace) m_trace->dump((uint64_t)(10*m_tickcount-2));
+      //if (m_core->dumpon && m_trace)
+      //    m_trace->dump((uint64_t)(10*m_tickcount-2));
 
       m_core->i_clk = 1;
       eval();
-      if (m_trace) m_trace->dump((uint64_t)(10*m_tickcount));
+      if (m_core->dumpon && m_trace)
+          m_trace->dump((uint64_t)(10*m_tickcount));
 
       m_core->i_clk = 0;
       eval();
-      //if (m_trace) m_trace->dump((uint64_t)(10*m_tickcount+5));
+      //if (m_core->dumpon && m_trace)
+      //    m_trace->dump((uint64_t)(10*m_tickcount+5));
 
-      if (m_trace) m_trace->flush();
+      if (m_trace)
+          m_trace->flush();
   }
 
   virtual void reset(void) {
@@ -89,7 +93,10 @@ int main(int argc, char **argv, char **env) {
     Verilated::commandArgs(argc, argv);
     TESTB<Vriscvsys> *tb = new TESTB<Vriscvsys>();
     tb->opentrace("riscvsys.vcd");
-    tb->m_trace->dump(0); // Initialize waveform at beginning of time.
+
+    // Initialize waveform at beginning of time.
+    if (tb->m_core->dumpon && tb->m_trace)
+        tb->m_trace->dump(0);
 
     tb->reset();
     while (!tb->done()) {

@@ -9,9 +9,11 @@
 module riscvsys ( // {{{
   /*verilator tracing_off*/
   input logic i_clk,
-  input logic i_rst
+  input logic i_rst,
+  output logic dumpon
   /*verilator tracing_on*/
 );
+  always_comb dumpon = tb.dumpon;
 
   testbench tb (
     .i_clk,
@@ -101,6 +103,9 @@ module testbench ( // {{{
   );
 
   // {{{ memory
+  reg dumpon;
+  initial dumpon = 1'b0;
+
   reg [31:0] memory [0:64*1024/4-1] /* verilator public */;
   initial $readmemh("test.hex", memory);
 
@@ -136,8 +141,14 @@ module testbench ( // {{{
           $finish;
         end
 
-        //else if (mem_wdata == 32'hacce5502) $dumpoff();
-        //else if (mem_wdata == 32'hacce5503) $dumpon();
+        else if (mem_wdata == 32'hacce5502) begin
+          dumpon = 1'b0;
+          //$dumpoff();
+        end
+        else if (mem_wdata == 32'hacce5503) begin
+          dumpon = 1'b1;
+          //$dumpon();
+        end
         else if (mem_wdata == 32'hacce5504) begin
           integer fd;
           fd = $fopen("memory.hex", "w");
