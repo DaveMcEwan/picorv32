@@ -9,7 +9,7 @@
 template <class VA> class TESTB { // {{{
 public:
   VA                *m_core;
-  VerilatedVcdC*    m_trace;
+  VerilatedVcdC     *m_trace;
   uint64_t          m_tickcount;
 
   TESTB(void) : m_trace(NULL), m_tickcount(0l) {
@@ -55,7 +55,7 @@ public:
       // changes, for which some logic depends.
       // This forces that logic to be recalculated before the top of the clock.
       eval();
-      if (m_trace) m_trace->dump((uint64_t)(10*m_tickcount-2));
+      //if (m_trace) m_trace->dump((uint64_t)(10*m_tickcount-2));
 
       m_core->i_clk = 1;
       eval();
@@ -63,10 +63,9 @@ public:
 
       m_core->i_clk = 0;
       eval();
-      if (m_trace) {
-          m_trace->dump((uint64_t)(10*m_tickcount+5));
-          m_trace->flush();
-      }
+      //if (m_trace) m_trace->dump((uint64_t)(10*m_tickcount+5));
+
+      if (m_trace) m_trace->flush();
   }
 
   virtual void reset(void) {
