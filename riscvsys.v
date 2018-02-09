@@ -20,8 +20,55 @@ module riscvsys ( // {{{
     .i_rst
   );
 
-  wire ev_add = tb.evmon.ev_add;
-  // TODO: Add ev_* here
+  wire ev_lui           = tb.evmon.ev_lui;
+  wire ev_auipc         = tb.evmon.ev_auipc;
+  wire ev_jal           = tb.evmon.ev_jal;
+  wire ev_jalr          = tb.evmon.ev_jalr;
+  wire ev_beq           = tb.evmon.ev_beq;
+  wire ev_bne           = tb.evmon.ev_bne;
+  wire ev_blt           = tb.evmon.ev_blt;
+  wire ev_bge           = tb.evmon.ev_bge;
+  wire ev_bltu          = tb.evmon.ev_bltu;
+  wire ev_bgeu          = tb.evmon.ev_bgeu;
+  wire ev_lb            = tb.evmon.ev_lb;
+  wire ev_lh            = tb.evmon.ev_lh;
+  wire ev_lw            = tb.evmon.ev_lw;
+  wire ev_lbu           = tb.evmon.ev_lbu;
+  wire ev_lhu           = tb.evmon.ev_lhu;
+  wire ev_sb            = tb.evmon.ev_sb;
+  wire ev_sh            = tb.evmon.ev_sh;
+  wire ev_sw            = tb.evmon.ev_sw;
+  wire ev_addi          = tb.evmon.ev_addi;
+  wire ev_slti          = tb.evmon.ev_slti;
+  wire ev_sltiu         = tb.evmon.ev_sltiu;
+  wire ev_xori          = tb.evmon.ev_xori;
+  wire ev_ori           = tb.evmon.ev_ori;
+  wire ev_andi          = tb.evmon.ev_andi;
+  wire ev_slli          = tb.evmon.ev_slli;
+  wire ev_srli          = tb.evmon.ev_srli;
+  wire ev_srai          = tb.evmon.ev_srai;
+  wire ev_add           = tb.evmon.ev_add;
+  wire ev_sub           = tb.evmon.ev_sub;
+  wire ev_sll           = tb.evmon.ev_sll;
+  wire ev_slt           = tb.evmon.ev_slt;
+  wire ev_sltu          = tb.evmon.ev_sltu;
+  wire ev_xor           = tb.evmon.ev_xor;
+  wire ev_srl           = tb.evmon.ev_srl;
+  wire ev_sra           = tb.evmon.ev_sra;
+  wire ev_or            = tb.evmon.ev_or;
+  wire ev_and           = tb.evmon.ev_and;
+  wire ev_rdcycle       = tb.evmon.ev_rdcycle;
+  wire ev_rdcycleh      = tb.evmon.ev_rdcycleh;
+  wire ev_rdinstr       = tb.evmon.ev_rdinstr;
+  wire ev_rdinstrh      = tb.evmon.ev_rdinstrh;
+  wire ev_ecall_ebreak  = tb.evmon.ev_ecall_ebreak;
+  wire ev_getq          = tb.evmon.ev_getq;
+  wire ev_setq          = tb.evmon.ev_setq;
+  wire ev_retirq        = tb.evmon.ev_retirq;
+  wire ev_maskirq       = tb.evmon.ev_maskirq;
+  wire ev_waitirq       = tb.evmon.ev_waitirq;
+  wire ev_timer         = tb.evmon.ev_timer;
+  wire ev_trap          = tb.evmon.ev_trap;
 
 endmodule // }}} riscvsys
 
