@@ -2,6 +2,9 @@
 RISCV_GNU_TOOLCHAIN_GIT_REVISION = bf5697a
 RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /space/riscv32
 
+VCDPRUNE = ~/phd/scripts/vcdprune
+EVA = ~/phd/scripts/eva/eva
+
 SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
 FIRMWARE_OBJS = firmware/start.o firmware/irq.o firmware/print.o firmware/sieve.o firmware/multest.o firmware/stats.o
@@ -23,6 +26,8 @@ fft1024: fft1024/fft1024.hex eva.vcd
 veri_hello: hello/hello.hex riscvsys.vcd
 veri_fft1024: fft1024/fft1024.hex riscvsys.vcd
 
+eva_fft1024: fft1024/fft1024.hex riscvsys.eva/riscvsys.evt
+
 eva.vcd: testbench.vvp
 	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
 
@@ -39,6 +44,12 @@ obj_dir/Vriscvsys: riscvsys.v riscvsys.cc picorv32.v
 
 riscvsys.vcd: obj_dir/Vriscvsys
 	obj_dir/Vriscvsys
+	mv $@ $@.unpruned
+	$(VCDPRUNE) $@.unpruned -o $@
+	rm $@.unpruned
+
+riscvsys.eva/riscvsys.evt: riscvsys.evc riscvsys.vcd
+	$(EVA) riscvsys -v --dump-evcx --dump-evt
 
 test: testbench.vvp firmware/firmware.hex
 	vvp -N $<
@@ -242,6 +253,7 @@ clean:
 		$(FIRMWARE_OBJS) \
 		$(FFT1024_OBJS) \
 		$(HELLO_OBJS) \
+		*.eva/ \
 		*/*.elf */*.elf.dasm */*.bin */*.hex */*.map *.vvp *.vcd *.trace obj_dir
 
 .PHONY: test test_vcd test_sp test_axi test_wb test_wb_vcd test_ez test_ez_vcd test_synth download-tools build-tools toc clean

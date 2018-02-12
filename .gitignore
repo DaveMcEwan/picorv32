@@ -8,6 +8,8 @@
 *.vvp
 *.vcd
 obj_dir/*
+*.unpruned
+*.eva/*
 /dhrystone/timing.txt
 /riscv-gnu-toolchain-riscv32i
 /riscv-gnu-toolchain-riscv32ic
