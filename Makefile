@@ -12,7 +12,7 @@ FFT1024_OBJS = start.o tb.o fft1024/irq.o fft1024/main.o fft1024/fft1024.o
 HELLO_OBJS = start.o tb.o hello/irq.o hello/main.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
 GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -pedantic # -Wconversion
-TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)i/bin/riscv32-unknown-elf-
+TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)imc/bin/riscv32-unknown-elf-
 COMPRESSED_ISA = C
 
 # Add things like "export http_proxy=... https_proxy=..." here
@@ -49,7 +49,7 @@ riscvsys.vcd: obj_dir/Vriscvsys
 	rm $@.unpruned
 
 riscvsys.eva/riscvsys.evt: riscvsys.evc riscvsys.vcd
-	$(EVA) riscvsys -v --dump-evcx --dump-evt
+	$(EVA) riscvsys -v
 
 test: testbench.vvp firmware/firmware.hex
 	vvp -N $<
@@ -156,7 +156,7 @@ fft1024/fft1024.elf: $(FFT1024_OBJS) fft1024/sections.lds
 	$(TOOLCHAIN_PREFIX)objdump -D $@ > $@.dasm
 
 fft1024/%.o: fft1024/%.c
-	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32i$(subst C,c,$(COMPRESSED_ISA)) \
+	$(TOOLCHAIN_PREFIX)gcc -c -march=rv32imc \
 		-Os --std=c99 $(GCC_WARNS) -ffreestanding -nostdlib \
 		-I . -o $@ $<
 
