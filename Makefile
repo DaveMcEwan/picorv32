@@ -2,123 +2,44 @@
 RISCV_GNU_TOOLCHAIN_GIT_REVISION = bf5697a
 RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /space/riscv32
 
-VCDPRUNE = ~/phd/scripts/vcdprune
-EVA = ~/phd/scripts/eva/eva
+VCDPRUNE = ./vcdprune
 
 SHELL = bash
 TEST_OBJS = $(addsuffix .o,$(basename $(wildcard tests/*.S)))
-FIRMWARE_OBJS = firmware/start.o firmware/irq.o firmware/print.o firmware/sieve.o firmware/multest.o firmware/stats.o
-FFT1024_OBJS = start.o tb.o fft1024/irq.o fft1024/main.o fft1024/fft1024.o
 HELLO_OBJS = start.o tb.o hello/irq.o hello/main.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
 GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -pedantic # -Wconversion
 TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)imc/bin/riscv32-unknown-elf-
 COMPRESSED_ISA = C
 
-# Add things like "export http_proxy=... https_proxy=..." here
-GIT_ENV = true
+default: hello_verilator
 
-default: hello
+hello_icarus: hello/hello.hex icarus.vcd
+hello_verilator: hello/hello.hex verilator.vcd
 
-hello: hello/hello.hex eva.vcd
-fft1024: fft1024/fft1024.hex eva.vcd
+icarus.vcd: testbench.vvp
+	vvp -N $< +vcd +trace +noerror +dumplevel=1
 
-veri_hello: hello/hello.hex riscvsys.vcd
-veri_fft1024: fft1024/fft1024.hex riscvsys.vcd
+testbench.vvp: tb_icar.v ddgp_rv32i.v
+	iverilog -o $@ $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) $^
+	chmod -x $@
 
-eva_fft1024: fft1024/fft1024.hex riscvsys.eva/riscvsys.evt
-
-eva.vcd: testbench.vvp
-	vvp -N $< +vcd +trace +noerror +eva +dumplevel=1
-
-obj_dir/Vriscvsys: riscvsys.v riscvsys.cc picorv32.v
+obj_dir/Vtb_veri: tb_veri.v tb_veri.cc ddgp_rv32i.v
 	verilator --cc --exe \
 		--trace \
 		--trace-depth 1 \
 		-Wno-fatal \
-		--top-module riscvsys \
+		--top-module tb_veri \
 		--clk i_clk \
-		riscvsys.cc \
-		riscvsys.v riscvsys_evmon.v picorv32.v
-	$(MAKE) -C obj_dir -f Vriscvsys.mk
+		tb_veri.cc \
+		tb_veri.v ddgp_rv32i.v
+	$(MAKE) -C obj_dir -f Vtb_veri.mk
 
-riscvsys.vcd: obj_dir/Vriscvsys
-	obj_dir/Vriscvsys
+verilator.vcd: obj_dir/Vtb_veri
+	obj_dir/Vtb_veri
 	mv $@ $@.unpruned
 	$(VCDPRUNE) $@.unpruned -o $@
 	rm $@.unpruned
-
-riscvsys.eva/riscvsys.evt: riscvsys.evc riscvsys.vcd
-	$(EVA) riscvsys -v
-
-test: testbench.vvp firmware/firmware.hex
-	vvp -N $<
-
-test_vcd: testbench.vvp firmware/firmware.hex
-	vvp -N $< +vcd +trace +noerror
-
-test_rvf: testbench_rvf.vvp firmware/firmware.hex
-	vvp -N $< +vcd +trace +noerror
-
-test_wb: testbench_wb.vvp firmware/firmware.hex
-	vvp -N $<
-
-test_wb_vcd: testbench_wb.vvp firmware/firmware.hex
-	vvp -N $< +vcd +trace +noerror
-
-test_ez: testbench_ez.vvp
-	vvp -N $<
-
-test_ez_vcd: testbench_ez.vvp
-	vvp -N $< +vcd
-
-test_sp: testbench_sp.vvp firmware/firmware.hex
-	vvp -N $<
-
-test_axi: testbench.vvp firmware/firmware.hex
-	vvp -N $< +axi_test
-
-test_synth: testbench_synth.vvp firmware/firmware.hex
-	vvp -N $<
-
-testbench.vvp: testbench.v picorv32.v riscvsys_evmon.v
-	iverilog -o $@ $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) $^
-	chmod -x $@
-
-testbench_rvf.vvp: testbench.v picorv32.v rvfimon.v
-	iverilog -o $@ -D RISCV_FORMAL $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) $^
-	chmod -x $@
-
-testbench_wb.vvp: testbench_wb.v picorv32.v
-	iverilog -o $@ $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) $^
-	chmod -x $@
-
-testbench_ez.vvp: testbench_ez.v picorv32.v
-	iverilog -o $@ $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) $^
-	chmod -x $@
-
-testbench_sp.vvp: testbench.v picorv32.v
-	iverilog -o $@ $(subst C,-DCOMPRESSED_ISA,$(COMPRESSED_ISA)) -DSP_TEST $^
-	chmod -x $@
-
-testbench_synth.vvp: testbench.v synth.v
-	iverilog -o $@ -DSYNTH_TEST $^
-	chmod -x $@
-
-check: check-yices
-
-check-%: check.smt2
-	yosys-smtbmc -s $(subst check-,,$@) -t 30 --dump-vcd check.vcd check.smt2
-	yosys-smtbmc -s $(subst check-,,$@) -t 25 --dump-vcd check.vcd -i check.smt2
-
-check.smt2: picorv32.v
-	yosys -v2 -p 'read_verilog -formal picorv32.v' \
-			  -p 'prep -top picorv32 -nordff' \
-		  -p 'assertpmux -noinit; opt -fast' \
-		  -p 'write_smt2 -wires check.smt2'
-
-synth.v: picorv32.v scripts/yosys/synth_sim.ys
-	yosys -qv3 -l synth.log scripts/yosys/synth_sim.ys
 
 firmware/firmware.hex: firmware/firmware.bin makehex.py
 	python3 makehex.py $< 16384 > $@
@@ -196,7 +117,7 @@ tests/%.o: tests/%.S tests/riscv_test.h tests/test_macros.h
 		-DTEST_FUNC_TXT='"$(notdir $(basename $<))"' -DTEST_FUNC_RET=$(notdir $(basename $<))_ret $<
 
 download-tools:
-	sudo bash -c 'set -ex; mkdir -p /var/cache/distfiles; $(GIT_ENV); \
+	sudo bash -c 'set -ex; mkdir -p /var/cache/distfiles; \
 	$(foreach REPO,riscv-gnu-toolchain riscv-binutils-gdb riscv-dejagnu riscv-gcc riscv-glibc riscv-newlib, \
 		if ! test -d /var/cache/distfiles/$(REPO).git; then rm -rf /var/cache/distfiles/$(REPO).git.part; \
 			git clone --bare https://github.com/riscv/$(REPO) /var/cache/distfiles/$(REPO).git.part; \
@@ -210,7 +131,7 @@ build-$(1)-tools:
 	+$(MAKE) build-$(1)-tools-bh
 
 build-$(1)-tools-bh:
-	+set -ex; $(GIT_ENV); \
+	+set -ex; \
 	if [ -d /var/cache/distfiles/riscv-gnu-toolchain.git ]; then reference_riscv_gnu_toolchain="--reference /var/cache/distfiles/riscv-gnu-toolchain.git"; else reference_riscv_gnu_toolchain=""; fi; \
 	if [ -d /var/cache/distfiles/riscv-binutils-gdb.git ]; then reference_riscv_binutils_gdb="--reference /var/cache/distfiles/riscv-binutils-gdb.git"; else reference_riscv_binutils_gdb=""; fi; \
 	if [ -d /var/cache/distfiles/riscv-dejagnu.git ]; then reference_riscv_dejagnu="--reference /var/cache/distfiles/riscv-dejagnu.git"; else reference_riscv_dejagnu=""; fi; \
